@@ -148,16 +148,16 @@ $\renewcommand{\mat}{\mathbf}$
 # Digital information
 *  Letters → numbers (e.g. A is 65 in the ASCII table, 🎂 is unicode number 127874)
 *  Text (words, paragraph, books) → Vector of numbers
-*  color → 3 numbers (red, green blue fractions)
-*  image → Matrix of colors or 3D-array
-*  sound → Vector (air pressure varying in time)
-*  temperature field in the ocean → 4D-array
+*  Color → 3 numbers (red, green blue fractions)
+*  Image → Matrix of colors or 3D-array
+*  Sound → Vector (air pressure varying in time)
+*  Temperature field in the ocean → 4D-array
 
 ---
 # Digital information
 *  Different representations are not unique
 *  Assume there are 3 categories: cat, dog, bird one can give them the numbers 1,2 and 3 or the vectors [1,0,0], [0,1,0] and [0,0,1]
-*  the later representation is called one-hot-encoding and is generally preferred for categorial variables
+*  The later representation is called one-hot-encoding and is generally preferred for categorial variables
 
 
 ---
@@ -185,8 +185,8 @@ $$
 $$
 
 1989: George Cybenko: universal approximation theorem states:
-  *  feed-forward network with a single hidden layer
-  *  finite number of neurons can approximate continuous functions on compact subsets of $IR^n$
+  *  Feed-forward network with a single hidden layer
+  *  Finite number of neurons can approximate continuous functions on compact subsets of $ℝ^n$
 
 
 ---
@@ -200,11 +200,11 @@ $$
 ---
 # Convolutional layer
 ![right500:](Fig/conv-layer.gif)
-*  takes an 3D array (lines, columns, number of input channel) and produces a 3D array (lines, columns, number of output channel)
-  *  the two first dimension are typically spatial dimensions
-  *  the spatial resolution is essentially maintained
-  *  weighted sum over a small subset of an image (typically 3 x 3, 5 x 5)
-*  several weighted sums with different weight are computed
+*  Takes an 3D array (lines, columns, number of input channel) and produces a 3D array (lines, columns, number of output channel)
+  *  The two first dimension are typically spatial dimensions
+  *  The spatial resolution is essentially maintained
+  *  Weighted sum over a small subset of an image (typically 3 x 3, 5 x 5)
+*  Several weighted sums with different weight are computed
 
 ---
 # Pooling layer
@@ -213,14 +213,22 @@ $$
 * maximum or average of a subset (typicalll 2x2), resolution is spatial resolution signficiantly reduced (typically by a factor of 4).
 * Convolutional layer, pooling layers and fully connected layers can be combined (after flatting the dimensions of the 3D array into a vector).
 
----
-# Cost functions
 
-* Regression: output is a continous parameter
-     * mean square error
-* Classification: output is a class label
+---
+![right800:](Fig/filters.png)
+Zeiler and Fergus, 2013
+
+---
+# Cost/loss functions
+![right300:](Fig/cost_function.png)
+* The ouput of the neural network should satisfy a priorie range constraints
+    * in particular: no negative probabilities, sum of all probabilities should be 1 by using e.g. [softmax](https://en.wikipedia.org/wiki/Softmax_function)
+* __Regression__: output is a continous parameter
+     * mean square error,...
+* __Classification__: output is a class label
      * last layer provides the probability for each class label
-     * cross-entropy, negative log likelyhood
+     * cross-entropy, negative log likelihood
+
 
 ---
 # Autoencoder
@@ -231,16 +239,16 @@ $$
 ---
 # Application to SST
 
-*  Having long time series to train neural networks is quite important
+*  Having __long time series__ to train neural networks is quite important
 *  Advanced Very High Resolution Radiometer (AVHRR) dataset, from 1 April 1985 to 31 December 2009.
 *  One single image is composed by 112 x 112 grid points.
-*  Cross-validation: in the last 50 images we removed data according to the cloud mask of the first 50 images of the SST time series.
+*  __Cross-validation__: in the last 50 images we removed data according to the cloud mask of the first 50 images of the SST time series.
      * not used at all during either the training or the reconstruction phases
      * can be considered independent.
-     * 106 816 measurements have been withheld this way.
+     * 106816 measurements have been withheld this way.
 
 ---
-# Region
+# Study area
 ![right500:](Fig/fig01-plotregion-arrow.png)
 * the red rectangle: delimits the studied region
 * color represents the bathymetry in meters
@@ -419,12 +427,12 @@ Standard deviation computed around the seasonal average
 ---
 # Conclusions
 
-* practical way to handle missing data in satellite images for neural networks
-* measured data divided by its expected error variance. Missing data are thus treated as data with an infinitely large error variance.
-* The cost function of the neural network is chosen such that the network provides the reconstruction but also the confidence of the reconstruction error
-* reconstruction method DINCAE compared favourably to the widely used DINEOF reconstruction method which is based on a truncated EOF analysis
-* The expected error for the reconstruction reflects well the areas covered by the satellite measurements as well as the areas with more intrinsic variability (like meanders of the Northern Current). The expected error predicted by the neural network provides a good indication of the accuracy of the reconstruction.
-* The variability of the DINCAE reconstruction matched the variability of the original data relatively well.
+* __Practical way to handle missing data__ in satellite images for neural networks
+* Measured data __divided by its expected error variance__. Missing data are thus treated as data with an infinitely large error variance.
+* The cost function of the neural network is chosen such that the network provides the reconstruction but also the __confidence of the reconstruction error__
+* Reconstruction method __DINCAE compared favourably__ to the widely used DINEOF reconstruction method which is based on a truncated EOF analysis
+* The expected error for the reconstruction reflects well the __areas covered by the satellite measurements__ as well as the areas with more intrinsic variability (like meanders of the Northern Current). The expected error predicted by the neural network provides a good indication of the accuracy of the reconstruction.
+* The variability of the DINCAE reconstruction __matched the variability of the original data__ relatively well.
 
 
     </textarea>
