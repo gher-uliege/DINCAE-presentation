@@ -134,7 +134,7 @@ class: center, middle, titlepage
 
 ## DINCAE: A neural network to reconstruct missing data in satellite images
 
-Alexander Barth,  Aida Alvera Azcarate
+Alexander Barth,  Aida Alvera-Azcárate
 
 GHER, University of Liège, Belgium
 
@@ -156,7 +156,7 @@ $\renewcommand{\mat}{\mathbf}$
 ---
 # Digital information
 *  Different representations are not unique
-*  Assume there are 3 categories: cat, dog, bird one can give them the numbers 1,2 and 3 or the vectors [1,0,0], [0,1,0] and [0,0,1]
+*  Assume there are 3 categories: cat, dog, bird. One can give them the numbers 1,2 and 3 or the vectors [1,0,0], [0,1,0] and [0,0,1]
 *  The later representation is called one-hot-encoding and is generally preferred for categorial variables
 
 
@@ -194,24 +194,24 @@ $$
 ![right800:](Fig/activation_function.png)
 
 ---
-# Convolutional neural netword
+# Convolutional neural network
 ![right800:](Fig/Typical_cnn.png)
 
 ---
 # Convolutional layer
 ![right500:](Fig/conv-layer.gif)
-*  Takes an 3D array (lines, columns, number of input channel) and produces a 3D array (lines, columns, number of output channel)
-  *  The two first dimension are typically spatial dimensions
+*  Takes a 3D array (lines, columns, number of input channel) and produces a 3D array (lines, columns, number of output channel)
+  *  The two first dimensions are typically spatial dimensions
   *  The spatial resolution is essentially maintained
   *  Weighted sum over a small subset of an image (typically 3 x 3, 5 x 5)
-*  Several weighted sums with different weight are computed
+*  Several weighted sums with different weights are computed
 
 ---
 # Pooling layer
 
 ![right800:](Fig/pooling.png)
-* maximum or average of a subset (typicalll 2x2), resolution is spatial resolution signficiantly reduced (typically by a factor of 4).
-* Convolutional layer, pooling layers and fully connected layers can be combined (after flatting the dimensions of the 3D array into a vector).
+* maximum or average of a subset (typicalll 2x2), resolution is spatial resolution significantly reduced (typically by a factor of 4).
+* Convolutional layers, pooling layers and fully connected layers can be combined (after flatting the dimensions of the 3D array into a vector).
 
 
 ---
@@ -221,7 +221,7 @@ Zeiler and Fergus, 2013
 ---
 # Cost/loss functions
 ![right300:](Fig/cost_function.png)
-* The ouput of the neural network should satisfy a priorie range constraints
+* The ouput of the neural network should satisfy a priori range constraints
     * in particular: no negative probabilities, sum of all probabilities should be 1 by using e.g. [softmax](https://en.wikipedia.org/wiki/Softmax_function)
 * __Regression__: output is a continous parameter
      * mean square error,...
@@ -293,7 +293,7 @@ The total list of input parameters is consequently the following:
 *  __Latitude__ (scaled linearly between -1 and 1)
 *  cosinus and sinus of the __day of the year__ divided by 365.25
 
-The complete dataset is this represented by an array of the size 10 x 112 x 112 x 5266.
+The complete dataset is thus represented by an array of the size 10 x 112 x 112 x 5266.
 The inverse of the error variance is either zero (for missing data) or a constant.
 
 ---
@@ -362,7 +362,7 @@ The final layer of the neural network produces the following output:
 * Partitioned into so-called mini-batches of 50 images
 * The entire dataset are used multiple times (epoch)
 * For every input image, more data points were masked (in addition to the cross-validation) by using a randomly chosen cloud mask during training.
-* The output the neural network (for every single grid point $i,j$) is a Gaussian probability distribution function characterized by a mean $\hat y\_{ij}$ and a standard deviation $\hat \sigma\_{ij}$.
+* The output of the neural network (for every single grid point $i,j$) is a Gaussian probability distribution function characterized by a mean $\hat y\_{ij}$ and a standard deviation $\hat \sigma\_{ij}$.
 $$
 \begin{equation}
   J(\hat y\_{ij}, \hat \sigma\_{ij}) = \frac{1}{2N} \sum\_{ij} \left[ \left( \frac{y\_{ij} - \hat y\_{ij}}{\hat \sigma\_{ij}} \right)^2 + \log (\hat \sigma\_{ij}^2 ) + 2\log(\sqrt{2\pi} ) \right]
@@ -385,7 +385,7 @@ $$
 
 
 ![right500:](Fig/fig03-RMS_iterations.svg)
-RMS difference with cross-validation dataset as a function of iteration. The solid blue line represent the DINCAE reconstruction at different steps of the iterative minimization algorithm. The dashed cyan line is the DINEOF reconstruction and the dashed red line is the average DINCAE reconstruction between epoch 200 and 1000.
+RMS difference with cross-validation dataset as a function of iteration. The solid blue line represents the DINCAE reconstruction at different steps of the iterative minimization algorithm. The dashed cyan line is the DINEOF reconstruction and the dashed red line is the average DINCAE reconstruction between epochs 200 and 1000.
 
 ---
 # Error estimation
@@ -393,7 +393,7 @@ RMS difference with cross-validation dataset as a function of iteration. The sol
 * scatter plot of the true SST (withheld during cross-validation) and the corresponding reconstructed SST.
 * The color represents the estimated expected error standard deviation of the reconstruction.
 * Low error values are expected to be closer to the dashed line.
-* Reconstructed and cross-validation SST tends to cluster relatively well around the ideal dashed line.
+* Reconstructed and cross-validation SST tend to cluster relatively well around the ideal dashed line.
 * Typically the lower expected errors are found more often near the dashed line than at the edge of the cluster of points.
 
 
@@ -401,7 +401,7 @@ RMS difference with cross-validation dataset as a function of iteration. The sol
 ---
 # Error estimation
 ![right500:](Fig/fig05-data-avg-pdf-err.svg)
-* Scaled error are computed as the difference between the reconstructed SST and the actual measured SST (withheld during cross-validation) divided by the expected standard deviation error.
+* Scaled errors are computed as the difference between the reconstructed SST and the actual measured SST (withheld during cross-validation) divided by the expected standard deviation error.
 
 
 ---
