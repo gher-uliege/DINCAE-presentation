@@ -140,25 +140,11 @@ GHER, University of Liège, Belgium
 
 ![logo](Fig/logo_ulg2.svg)
 ![logo](Fig/GHER.svg)
-
----
 $\renewcommand{\vec}{\mathbf}$
 $\renewcommand{\mat}{\mathbf}$
 
-# Digital information
-*  Letters → numbers (e.g. A is 65 in the ASCII table, 🎂 is unicode number 127874)
-*  Text (words, paragraph, books) → Vector of numbers
-*  Color → 3 numbers (red, green blue fractions)
-*  Image → Matrix of colors or 3D-array
-*  Sound → Vector (air pressure varying in time)
-*  Temperature field in the ocean → 4D-array
-
 ---
-# Digital information
-*  Different representations are not unique
-*  Assume there are 3 categories: cat, dog, bird. One can give them the numbers 1,2 and 3 or the vectors [1,0,0], [0,1,0] and [0,0,1]
-*  The later representation is called one-hot-encoding and is generally preferred for categorial variables
-
+![right800:](Fig/slide_sst.svg)
 
 ---
 # Perceptron
@@ -178,20 +164,24 @@ $\mat W_0$ denotes the matrix of weights, $\mathbf x$ is the vector of inputs, $
 # Multi-layer perceptron
 
 * fully connected layer
-![right500:](Fig/Artificial_neural_network.svg)
+![right300:](Fig/Artificial_neural_network.svg)
 
 $$
 \mathbf x\_n = f(\mathbf W\_n \mathbf x\_{n-1} + \mathbf b\_n)
 $$
 
-1989: George Cybenko: universal approximation theorem states:
-  *  Feed-forward network with a single hidden layer
-  *  Finite number of neurons can approximate continuous functions on compact subsets of $ℝ^n$
+* 1989: George Cybenko: universal approximation theorem states:
+  * Feed-forward network with a single hidden layer
+  * Finite number of neurons can approximate continuous functions on compact subsets of $ℝ^n$
+  * [Visual "proof"](http://neuralnetworksanddeeplearning.com/chap4.html)
 
-
+* However... It turns out that __deep__ networks network are much more powerful than __wide__ network
 ---
 # Activation functions
 ![right800:](Fig/activation_function.png)
+
+* Importance: activation function must be non-linear
+* Fun fact: even the [rounding error from floating number](https://openai.com/blog/nonlinear-computation-in-linear-networks/) act as a non-linearity that can be used to to make a neural network.
 
 ---
 # Convolutional neural network
@@ -524,3 +514,22 @@ Standard deviation computed around the seasonal average
  -->
 <!--  LocalWords:  parameterized representativity GPS meridional
  -->
+
+
+<!--
+
+# Digital information
+*  Letters → numbers (e.g. A is 65 in the ASCII table, 🎂 is unicode number 127874)
+*  Text (words, paragraph, books) → Vector of numbers
+*  Color → 3 numbers (red, green blue fractions)
+*  Image → Matrix of colors or 3D-array
+*  Sound → Vector (air pressure varying in time)
+*  Temperature field in the ocean → 4D-array
+
+---
+# Digital information
+*  Different representations are not unique
+*  Assume there are 3 categories: cat, dog, bird. One can give them the numbers 1,2 and 3 or the vectors [1,0,0], [0,1,0] and [0,0,1]
+*  The later representation is called one-hot-encoding and is generally preferred for categorial variables
+
+-->
