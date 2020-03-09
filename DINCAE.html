@@ -250,6 +250,33 @@ Zeiler and Fergus, 2013
 * color represents the bathymetry in meters
 * the main currents: the Western Corsican Current (WCC), the Eastern Corsican Current (ECC) and the Northern Corsican Current (NC)
 
+
+---
+# Bayes rule
+![right450:](Fig/plot_bayes_rule.svg)
+
+* For Gaussian-distributed errors:
+   * prior: $N(x^f,\sigma^f)$
+   * observations: $N(y^o,\sigma^o)$
+   * posterior: $N(x^a,\sigma^a)$
+* Bayes:
+
+$$
+p(x|y^o) = \frac{p(x) p(y^o|x) }{p(y^o)}
+$$
+
+* Mean and variance of posterior given by:
+$$\begin{eqnarray}
+{\sigma^a}^{-2} x^a &=&
+{\sigma^f}^{-2} x^f +
+{\sigma^o}^{-2} y^o  \\\\
+{\sigma^a}^{-2}  &=&
+{\sigma^f}^{-2}  +
+{\sigma^o}^{-2}  \\\\
+\end{eqnarray}$$
+
+* Concept of __information__: ${\sigma^f}^{-2} x^f$ and ${\sigma^o}^{-2} y^o$
+
 ---
 # Neural network with missing data as input
 
