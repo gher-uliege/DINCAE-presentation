@@ -325,7 +325,7 @@ The final layer of the neural network produces the following output:
 *  The main building blocks of the neural network are __convolutional layers__.
 *  DINCAE uses 5 encoding and 5 decoding layers with a different number of filter sizes.
 *  Beside the input and output layer, the filter sizes are 16, 24, 36 and 54
-*  We also added skip connections between the output of pooling layers and the upsampling layers.
+*  We also added __skip connections__ between the output of pooling layers and the upsampling layers (concatenation).
 *  The motivation of this choice is that large-scale information of the SST would be captured by the neurons in the bottle-neck, but small-scale structures unrelated to the overall structure in the SST would be handled by these skip connections. In the absence of the skip connections, the small scale structures would be removed from the dataset.
 
 
@@ -375,10 +375,9 @@ The final layer of the neural network produces the following output:
 ---
 # Training
 
-
 * Partitioned into so-called mini-batches of 50 images
 * The entire dataset are used multiple times (epoch)
-* For every input image, more data points were masked (in addition to the cross-validation) by using a randomly chosen cloud mask during training.
+* For every input image, more data points were masked (in addition to the cross-validation) by using a randomly chosen cloud mask during training (data set __augmentation__).
 * The output of the neural network (for every single grid point $i,j$) is a Gaussian probability distribution function characterized by a mean $\hat y\_{ij}$ and a standard deviation $\hat \sigma\_{ij}$.
 $$
 \begin{equation}
@@ -402,7 +401,9 @@ $$
 
 
 ![right500:](Fig/fig03-RMS_iterations.svg)
-RMS difference with cross-validation dataset as a function of iteration. The solid blue line represents the DINCAE reconstruction at different steps of the iterative minimization algorithm. The dashed cyan line is the DINEOF reconstruction and the dashed red line is the average DINCAE reconstruction between epochs 200 and 1000.
+* RMS difference with cross-validation dataset as a function of iteration.
+* The solid blue line represents the DINCAE reconstruction at different steps of the iterative minimization algorithm.
+* The dashed cyan line is the DINEOF reconstruction and the dashed red line is the __average DINCAE reconstruction__ between epochs 200 and 1000.
 
 ---
 # Error estimation
@@ -457,15 +458,17 @@ Standard deviation computed around the seasonal average
 * The expected error for the reconstruction reflects well the __areas covered by the satellite measurements__ as well as the areas with more intrinsic variability (like meanders of the Northern Current). The expected error predicted by the neural network provides a good indication of the accuracy of the reconstruction.
 * The variability of the DINCAE reconstruction __matched the variability of the original data__ relatively well.
 
----
-# Try it yourself?
 
-* We can try a very simple neural network classifier
-* Type https://tinyurl.com/simple-neural-network/ and download the file
-* If you have a google account, go to https://colab.research.google.com/
-* Open the downloaded file: File->Open notebook->Upload->Browse to select the file
-* Select: Runtime->Run all
-* Try to change the neural network model to improve the accuracy
+---
+class: center, middle
+
+# Thanks!
+---
+# Still there?
+![right300:](Fig/Screenshot_2020-03-09 lex fridman lecun - YouTube.png)
+* Artificial Intelligence: [AI Podcast by Lex Fridman](https://lexfridman.com/ai/), MIT, USA
+* Initial just about Artificial Intelligence, but now also on physics, technology, space travel,...
+* Guest: Yann LeCun, François Chollet, Andrew Ng, Ian Goodfellow, Garry Kasparov, Leonard Susskind, Donald Knuth, Bjarne Stoustrup, Guido van Rossum, ...
 
     </textarea>
     <script src="remark-latest.min.js" type="text/javascript"></script>
@@ -559,4 +562,18 @@ Standard deviation computed around the seasonal average
 *  Assume there are 3 categories: cat, dog, bird. One can give them the numbers 1,2 and 3 or the vectors [1,0,0], [0,1,0] and [0,0,1]
 *  The later representation is called one-hot-encoding and is generally preferred for categorial variables
 
+-->
+
+
+
+<!--
+---
+# Try it yourself?
+
+* We can try a very simple neural network classifier
+* Type https://tinyurl.com/simple-neural-network/ and download the file
+* If you have a google account, go to https://colab.research.google.com/
+* Open the downloaded file: File->Open notebook->Upload->Browse to select the file
+* Select: Runtime->Run all
+* Try to change the neural network model to improve the accuracy
 -->
