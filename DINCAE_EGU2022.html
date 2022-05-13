@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DINCAE</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Droid Serif';
+        font-weight: normal;
+        color: rgb(0,56,201);
+      }
+
+      .center.middle h1 {
+        color: rgb(0,156,146);
+      }
+
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+
+      .titlepage p {
+          margin: 5px;
+      }
+
+      strong {
+        color: rgb(204,25,25);
+      }
+
+      img, video {
+          margin: 5px;
+          box-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+      }
+
+      img[alt^="logo"] {
+          height: 60px;
+          margin: 20px;
+      }
+
+      img[alt*="CDI"] {
+          width: 100px;
+      }
+
+      img[alt*="Observations:"] {
+          width: 400px;
+          float: right;
+      }
+
+      img[alt^="logo"] {
+          height: 60px;
+          margin: 20px;
+      }
+
+
+      img[alt*="Combine"] {
+          width: 500px;
+          float: right;
+      }
+
+
+     img[alt*="full:"] {
+          width: 800px;
+          float: right;
+      }
+
+     img[alt*="right300:"] {
+          width: 300px;
+          float: right;
+      }
+
+     img[alt*="right500:"] {
+          width: 500px;
+          float: right;
+      }
+
+     img[alt*="experror:"] {
+          width: 650px;
+          float: right;
+      }
+
+      img[alt*="right800:"] {
+          width: 800px;
+          float: right;
+      }
+
+     img[alt*="right450:"] {
+         width: 450px;
+         float: right;
+         margin-top: -100px;
+      }
+
+      img[alt*="WMS_tile"] {
+          width: 350px;
+          float: right;
+          border: 1px solid black;
+      }
+
+      img[alt*="half:"] {
+          width: 350px;
+          /*float: right;*/
+      }
+
+
+      img[alt*="synthetic:"] {
+          width: 500px;
+          float: right;
+      }
+
+      table {
+          border-collapse: collapse;
+          margin: auto;
+      }
+      th, td {
+          padding: 6px 13px;
+          border: 1px solid #ccc;
+      }
+      table tr:nth-child(2n) {
+          background-color: #f8f8f8;
+      }
+
+
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, titlepage
+
+### A multivariate convolutional autoencoder to reconstruct satellite data with an error estimate based on non-gridded observations: application to sea surface height
+
+Alexander Barth, Aida Alvera-Azcárate, Charles Troupin, and Jean-Marie Beckers
+
+GHER, University of Liège, Belgium
+
+![logo](Fig/logo_ulg2.svg)
+![logo](Fig/GHER.svg)
+$\renewcommand{\vec}{\mathbf}$
+$\renewcommand{\mat}{\mathbf}$
+
+
+---
+
+# Problem
+
+* All earth observations system provide only incomplelete view of the ocean state (satellite, in situ)
+* In particular, 
+   * IF sensor measuring sea surface temperature cannot see thought clouds
+   * Current altimetry only provide sea surface height measurements along tracks
+* Technique to inver missing data in satellite observations have been developped in the past such as:
+* optimal interpolation
+* data interpolating empirical orthogonal functions (DINEOF)
+
+* For gridded data: convolutional neural networks are a promizing approach (e.g. Barth et al. 2020)
+* Uncleay how to extend this approach for non-gridded observations
+
+---
+# Neural network with missing data as input
+
+* The handling of missing data is done in analogy to the assimilation of data in numerical ocean models.
+* The standard optimal interpolation equations can be written as follows:
+
+$$\begin{eqnarray}
+{\mat P^a}^{-1} \vec x^a &=&
+{\mat P^f}^{-1} \vec x^f +
+{\mat H}^T {\mat R}^{-1} \vec y^o  \\\\
+{\mat P^a}^{-1} &=&
+{\mat P^f}^{-1} +
+{\mat H}^T {\mat R}^{-1} \mat H
+\end{eqnarray}$$
+
+where $\vec x^f$ is the model forecast with error covariance $\mat P^f$, $\vec y^o$ are the observations with error covariance $\mat R$ and $\mat H$ is the observation operator extracting the observed part from the state vector $\vec x^f$.
+* The analysis $\vec x^a$ is the combined estimate with the error covariance matrix $\mat P^a$.
+* The main input datasets of the CAE are i) the SST divided by its error variance and ii) the inverse of the error variance.
+* If a data point is missing, then the corresponding error variance is considered infinitely large and the value at this point would be zero for both input datasets.
+
+---
+
+# Data sets
+
+* [Altimetry data](https://doi.org/10.48670/moi-00139) from 1993-01-01 to 2019-05-13 from 22 satellite missions over the Mediterran Sea from CMEMS, EU
+* These data were split along the following fractions:
+    * 70 % training data (optimize weights and baises of the neural network)
+    * 20 % development data (optimize hyperparameters using Bayesian Optmimization)
+    * 10 % test data (final validation)a
+* To reduce the correlation between the different datasets, satellite tracks are not splitted and belong entirely to one of these 3 datasets. 
+
+* Auxiliary data sets:
+   * AVHRR_OI-NCEI-L4-GLOB-v2.0 datasets from NCEI, US (Reynolds et al, 2008)
+
+
+---
+
+# Results
+
+![full:](Fig/fig08_sla-DINCAE_data-avg_2017-06-07_abcd.png)
+* Baseline method to compare: DIVAnd (Data-Interpolating Variational Analysis in n dimensions)
+*  All parameters of DIVAnd are also optimized using Bayesian minimization with expected improvement as acquisition function by minimizing the RMS error relative to the developpement datasets.
+* Best RMS error of the analysis for these parameters is 3.61 cm relative to the independent test dataset
+* Best RMS error of DINCAE relative to the test dataset of 3.47 cm
+
+
+---
+
+## Expected error
+
+![experror:](Fig/fig09_DIVAnd-test-valplot-errbinplot.png)
+![experror:](Fig/fig10_DINCAE-best-SST-test-valplot-errbinplot.png)
+* DINCAE and DIVAnd provide a field with the estimated expected error.
+* We made 10 categories of pixels based on the expected standard deviation error, evenly distributed between the 10 % and 90 % percentiles of the expected standard deviation error. For every category we computed the actual RMS relative to the test dataset. Ideally this should correspond to the estimated expected error of the reconstruction (including the observational error).
+* A global adjustment factor is also applied
+* The main advantage of DINCAE relative to DIVAnd is the improved estimate of the error variance of the results.
+
+
+
+---
+
+
+## Variability
+
+
+![full:](Fig/fig11_sla_std_comparison.png)
+In summary, the accuracy of the DINCAE reconstruction is slightly better than the accuracy of the DIVAnd analysis. However, the main improvement of the DINCAE approach here is that the expected error variance of the analysis is much more reliable than the expected error variance of DIVAnd.  
+
+
+
+
+Standard deviation of the sea-level anomaly for the DIVAnd method and DINCAE (including SST as auxiliary parameter)
+
+The standard deviation of the DINCAE reconstruction is in all 3 regions higher than the standard deviation for DIVAnd despite that the DINCAE reconstruction has a lower RMS error than DIVAnd. Also the standard deviation of DINCAE is in general closer to the observed standard deviation. 
+
+---
+
+## Conclusions
+
+Improvements in DINCAE:
+
+*  multi-variate reconstructions
+* refinement step
+*  non-gridded datasets
+*  DINCAE method compares to the DIVAnd method favorably
+       * in terms of reliability of the expected error variance
+       * accuracy of the reconstruction relative to the test dataset
+       * realism of the temporal standard deviation 
+
+* Code: https://github.com/gher-ulg/DINCAE.jl (written in Julia)
+* Paper (open access):  https://gmd.copernicus.org/articles/15/2183/2022/
+
+
+
+
+---
+# Bayes rule
+![right450:](Fig/plot_bayes_rule.svg)
+
+* For Gaussian-distributed errors:
+   * prior: $N(x^f,\sigma^f)$
+   * observations: $N(y^o,\sigma^o)$
+   * posterior: $N(x^a,\sigma^a)$
+* Bayes:
+
+$$
+p(x|y^o) = \frac{p(x) p(y^o|x) }{p(y^o)}
+$$
+
+* Mean and variance of posterior given by:
+$$\begin{eqnarray}
+{\sigma^a}^{-2} x^a &=&
+{\sigma^f}^{-2} x^f +
+{\sigma^o}^{-2} y^o  \\\\
+{\sigma^a}^{-2}  &=&
+{\sigma^f}^{-2}  +
+{\sigma^o}^{-2}  \\\\
+\end{eqnarray}$$
+
+* Concept of __information__: ${\sigma^f}^{-2} x^f$ and ${\sigma^o}^{-2} y^o$
+
+
+---
+# Structure
+
+The total list of input parameters is consequently the following:
+
+*  __SST anomalies__ scaled by the __inverse of the error variance__ (zero if the data is missing)
+*  __Inverse of the error variance__ (zero if the data is missing)
+*  Scaled SST anomalies and inverse of error variance of the __previous day__
+*  Scaled SST anomalies and inverse of error variance of the __next day__
+*  __Longitude__ (scaled linearly between -1 and 1)
+*  __Latitude__ (scaled linearly between -1 and 1)
+*  cosinus and sinus of the __day of the year__ divided by 365.25
+
+The complete dataset is thus represented by an array of the size 10 x 112 x 112 x 5266.
+The inverse of the error variance is either zero (for missing data) or a constant.
+
+---
+# Structure
+![right800:](Fig/DINCAE_1.svg)
+
+---
+# Structure
+![right800:](Fig/DINCAE_2.svg)
+
+---
+# Structure
+![right800:](Fig/DINCAE_3.svg)
+
+---
+# Structure
+![right800:](Fig/DINCAE_4.svg)
+
+---
+# Structure
+![right800:](Fig/DINCAE_5.svg)
+
+
+---
+# Output of the neural network
+
+The final layer of the neural network produces the following output:
+
+*  __SST__ scaled by the inverse of the expected error variance
+*  Logarithm of the inverse of the __expected error variance__
+
+
+*  The main building blocks of the neural network are __convolutional layers__.
+*  DINCAE uses 5 encoding and 5 decoding layers with a different number of filter sizes.
+*  Beside the input and output layer, the filter sizes are 16, 24, 36 and 54
+*  We also added __skip connections__ between the output of pooling layers and the upsampling layers (concatenation).
+*  The motivation of this choice is that large-scale information of the SST would be captured by the neurons in the bottle-neck, but small-scale structures unrelated to the overall structure in the SST would be handled by these skip connections. In the absence of the skip connections, the small scale structures would be removed from the dataset.
+
+
+---
+# Structure
+![right800:](Fig/slide_network.svg)
+
+---
+# Training
+
+* Partitioned into so-called mini-batches of 50 images
+* The entire dataset are used multiple times (epoch)
+* For every input image, more data points were masked (in addition to the cross-validation) by using a randomly chosen cloud mask during training (data set __augmentation__).
+* The output of the neural network (for every single grid point $i,j$) is a Gaussian probability distribution function characterized by a mean $\hat y\_{ij}$ and a standard deviation $\hat \sigma\_{ij}$.
+$$
+\begin{equation}
+  J(\hat y\_{ij}, \hat \sigma\_{ij}) = \frac{1}{2N} \sum\_{ij} \left[ \left( \frac{y\_{ij} - \hat y\_{ij}}{\hat \sigma\_{ij}} \right)^2 + \log (\hat \sigma\_{ij}^2 ) + 2\log(\sqrt{2\pi} ) \right]
+\end{equation}
+$$
+
+* The first term: mean square error, but scaled by the estimated error standard deviation.
+* The second term: penalizes any over-estimation of the error standard deviation.
+
+---
+# Optimization
+
+* Adam optimizer with the standard parameters for the learning rate $\alpha = 0.001$, the exponential decay rate for the first moment estimates $\beta\_1 = 0.9$, and for the second-moment estimates $\beta\_1 = 0.999$, regularization parameter $\epsilon=10^{-8}$.
+* Avoid overfitting
+    * drop-out layer between the fully connected layers of the network.
+    * Gaussian-distributed noise to the input of the network with a zero mean and a standard deviation of 0.05°C.
+
+---
+# Results
+
+
+![right500:](Fig/fig03-RMS_iterations.svg)
+* RMS difference with cross-validation dataset as a function of iteration.
+* The solid blue line represents the DINCAE reconstruction at different steps of the iterative minimization algorithm.
+* The dashed cyan line is the DINEOF reconstruction and the dashed red line is the __average DINCAE reconstruction__ between epochs 200 and 1000.
+
+---
+# Error estimation
+![right500:](Fig/fig04-data-avg-scatter-err.png)
+* scatter plot of the true SST (withheld during cross-validation) and the corresponding reconstructed SST.
+* The color represents the estimated expected error standard deviation of the reconstruction.
+* Low error values are expected to be closer to the dashed line.
+* Reconstructed and cross-validation SST tend to cluster relatively well around the ideal dashed line.
+* Typically the lower expected errors are found more often near the dashed line than at the edge of the cluster of points.
+
+
+
+---
+# Error estimation
+![right500:](Fig/fig05-data-avg-pdf-err.svg)
+* Scaled errors are computed as the difference between the reconstructed SST and the actual measured SST (withheld during cross-validation) divided by the expected standard deviation error.
+
+
+---
+![right800:](Fig/fig06-data-avg-016-new-300.png)
+Example reconstruction with DINCAE and DINEOF for the date 2009-10-13
+
+---
+![right800:](Fig/fig07-data-avg-005-new-300.png)
+Example reconstruction with some artefacts for the date 2009-09-29
+
+
+---
+# Independent validation
+Comparison with the independent cross-validation data and the dependent data used for training (in °C)
+
+|        |     RMS|    CRMS|     bias|
+|:-------|-------:|-------:|--------:|
+| DINEOF |  1.1676|  1.1102|  -0.3616|
+| DINCAE |  1.1362|  1.0879|  -0.3278|
+
+Comparison with the World Ocean Database for SST grid points covered by clouds
+
+---
+# Variability
+
+![right700:](Fig/fig08-compare_std_around_seasonalaverage.png)
+Standard deviation computed around the seasonal average
+
+---
+# Conclusions
+
+* __Practical way to handle missing data__ in satellite images for neural networks
+* Measured data __divided by its expected error variance__. Missing data are thus treated as data with an infinitely large error variance.
+* The cost function of the neural network is chosen such that the network provides the reconstruction but also the __confidence of the reconstruction error__
+* Reconstruction method __DINCAE compared favourably__ to the widely used DINEOF reconstruction method which is based on a truncated EOF analysis
+* The expected error for the reconstruction reflects well the __areas covered by the satellite measurements__ as well as the areas with more intrinsic variability (like meanders of the Northern Current). The expected error predicted by the neural network provides a good indication of the accuracy of the reconstruction.
+* The variability of the DINCAE reconstruction __matched the variability of the original data__ relatively well.
+* Code: https://github.com/gher-ulg/DINCAE
+
+---
+class: center, middle
+
+# Thanks!
+
+
+---
+# Perceptron
+
+![right300:](Fig/Frank_Rosenblatt.jpg)
+Frank Rosenblatt with a Mark I Perceptron computer in 1960
+
+* Single layer (perceptron)
+
+$$
+\mathbf x\_1 = f(\mathbf W\_0 \mathbf x\_0 + \mathbf b\_0)
+$$
+
+
+$\mat W_0$ denotes the matrix of weights, $\mathbf x$ is the vector of inputs, $\mathbf b$ is the bias and $f$ is the non-linear activation function.
+
+ ...and you thought debugging is hard!
+
+---
+# Multi-layer perceptron
+
+* fully connected layer
+![right300:](Fig/Artificial_neural_network.svg)
+
+$$
+\mathbf x\_n = f(\mathbf W\_n \mathbf x\_{n-1} + \mathbf b\_n)
+$$
+
+* 1989: George Cybenko: universal approximation theorem states:
+  * Feed-forward network with a single hidden layer
+  * Finite number of neurons can approximate continuous functions on compact subsets of $ℝ^n$
+  * [Visual "proof"](http://neuralnetworksanddeeplearning.com/chap4.html)
+
+* However... It turns out that __deep__ networks network are much more powerful than __wide__ network
+---
+# Activation functions
+![right800:](Fig/activation_function.png)
+
+* Importance: activation function must be non-linear
+* Fun fact: even the [rounding error from floating number](https://openai.com/blog/nonlinear-computation-in-linear-networks/) act as a non-linearity that can be used to to make a neural network.
+
+---
+# Convolutional neural network
+![right800:](Fig/Typical_cnn.png)
+
+---
+# Convolutional layer
+![right500:](Fig/conv-layer.gif)
+*  Takes a 3D array (lines, columns, number of input channel) and produces a 3D array (lines, columns, number of output channel)
+  *  The two first dimensions are typically spatial dimensions
+  *  The spatial resolution is essentially maintained
+  *  Weighted sum over a small subset of an image (typically 3 x 3, 5 x 5)
+*  Several weighted sums with different weights are computed
+
+---
+# Pooling layer
+
+![right800:](Fig/pooling.png)
+* maximum or average of a subset (typicalll 2x2), resolution is spatial resolution significantly reduced (typically by a factor of 4).
+* Convolutional layers, pooling layers and fully connected layers can be combined (after flatting the dimensions of the 3D array into a vector).
+
+
+---
+![right800:](Fig/filters.png)
+Zeiler and Fergus, 2013
+
+---
+# Cost/loss functions
+![right300:](Fig/cost_function.png)
+* The ouput of the neural network should satisfy a priori range constraints
+    * in particular: no negative probabilities, sum of all probabilities should be 1 by using e.g. [softmax](https://en.wikipedia.org/wiki/Softmax_function)
+* __Regression__: output is a continous parameter
+     * mean square error,...
+* __Classification__: output is a class label
+     * last layer provides the probability for each class label
+     * cross-entropy, negative log likelihood
+
+
+---
+# Autoencoder
+![right500:](Fig/caearch_shallow.png)
+* Neural network is trained to produce as output the same as the input
+* Information is compressed in the so called bottle-neck
+
+---
+# Applications
+![right800:](Fig/style_transer.png)
+* Style transfer, StyleBank, Chen et al., 2017
+* Deep fakes,...
+
+
+---
+# DINCAE
+
+| number | type                           | output size    | parameters                           |
+|:-------|:-------------------------------|:---------------|:-------------------------------------|
+| 1      | input                          | 112 x 112 x 10  |                                      |
+| 2      | conv. 2d                       | 112 x 112 x 16 | n. filters = 16, kernel size = (3,3) |
+| 3      | pooling 2d                     | 56 x 56 x 16   | pool size = (2,2), strides = (2,2)   |
+| 4      | conv. 2d                       | 56 x 56 x 24   | n. filters = 24, kernel size = (3,3) |
+| 5      | pooling 2d                     | 28 x 28 x 24   | pool size = (2,2), strides = (2,2)   |
+| 7      | conv. 2d                       | 28 x 28 x 36   | n. filters = 36, kernel size = (3,3) |
+| 8      | pooling 2d                     | 14 x 14 x 36   | pool size = (2,2), strides = (2,2)   |
+| 9      | conv. 2d                       | 14 x 14 x 54   | n. filters = 54, kernel size = (3,3) |
+| 10     | pooling 2d                     | 7 x 7 x 54     | pool size = (2,2), strides = (2,2)   |
+
+---
+# DINCAE
+
+| number | type                           | output size    | parameters                           |
+|:-------|:-------------------------------|:---------------|:-------------------------------------|
+| 11     | fully connected layer          | 529            |                                      |
+| 12     | drop-out layer                 | 529            | drop-out rate for training = 0.3     |
+| 13     | fully connected layer          | 2646           |                                      |
+| 14     | drop-out layer                 | 2646           | drop-out rate for training = 0.3     |
+| 15     | nearest neighbor interpolation | 14 x 14 x 54   |                                      |
+| 16     | concatenate output of 15 and 8 | 14 x 14 x 90   |                                      |
+| 17     | conv. 2d                       | 14 x 14 x 36   | n. filters = 36, kernel size = (3,3) |
+| 18     | nearest neighbor interpolation | 28 x 28 x 36   |                                      |
+
+---
+
+| number | type                           | output size    | parameters                           |
+|:-------|:-------------------------------|:---------------|:-------------------------------------|
+| 19     | concatenate output of 18 and 5 | 28 x 28 x 60   |                                      |
+| 20     | conv. 2d                       | 28 x 28 x 24   | n. filters = 24, kernel size = (3,3) |
+| 21     | nearest neighbor interpolation | 56 x 56 x 24   |                                      |
+| 22     | concatenate output of 21 and 3 | 56 x 56 x 40   |                                      |
+| 23     | conv. 2d                       | 56 x 56 x 16   | n. filters = 16, kernel size = (3,3) |
+| 24     | nearest neighbor interpolation | 112 x 112 x 16 |                                      |
+| 25     | concatenate output of 24 and 1 | 112 x 112 x 26 |                                      |
+| 26     | conv. 2d                       | 112 x 112 x 2  | n. filters = 2, kernel size = (3,3)  |
+
+
+
+    </textarea>
+    <script src="remark-latest.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+    <!--<script src="MathJax-2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>-->
+    <script type="text/javascript">
+      var slideshow = remark.create({ ratio: "16:9" });
+
+
+      // Setup MathJax
+      MathJax.Hub.Config({
+          tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+            inlineMath: [['$','$'], ['\(','\\)']],
+            processEscapes: true
+          },
+          TeX: { extensions: ["color.js"] },
+          "HTML-CSS": {
+              imageFont: null
+          }
+      });
+      MathJax.Hub.Configured();
+
+    </script>
+  </body>
+</html>
+
+<!--  LocalWords:  Slideshow nd matlab argo whos Attr Tobs latobs UTC
+ -->
+<!--  LocalWords:  lonobs timeobs datenum datevec datestr colorbar nc
+ -->
+<!--  LocalWords:  caxis Outliers outliers Bathymetry GEBCO ncdisp pn
+ -->
+<!--  LocalWords:  bathymetry ncread lon ndgrid pcolor divand Tmean
+ -->
+<!--  LocalWords:  Tanom len moddim interpn isnan repmat po lentime
+ -->
+<!--  LocalWords:  clf dpng yyyy png outlier OceanBrowser url rgb px
+ -->
+<!--  LocalWords:  Kaffeesatz titlepage img rgba CDI situ Sylvain OGS
+ -->
+<!--  LocalWords:  Watelet Troupin Alvera Azcarate Giorgio Santinelli
+ -->
+<!--  LocalWords:  Gerrit Hendriksen Alessandra Giorgetti Beckers EPS
+ -->
+<!--  LocalWords:  GHER Liège SOCIB Deltares Variational gridded SMHI
+ -->
+<!--  LocalWords:  variational NetCDF SeaDataNet EMODNET Metadata SVG
+ -->
+<!--  LocalWords:  OPeNDAP Centred WebM revalidation distrib EDMO OGC
+ -->
+<!--  LocalWords:  oceanbrowser abarth localhost webm AGPL matplotlib
+ -->
+<!--  LocalWords:  WMS WFS Multi jpeg HDF CDF GeoTIFF GRIB Unidata td
+ -->
+<!--  LocalWords:  CMEMS ESA ECMWF NOAA WOA ESRI ArcGIS IDL ccc vec
+ -->
+<!--  LocalWords:  Mathematica georeferenced GetCapabilities Joaquín
+ -->
+<!--  LocalWords:  GeographicBoundingBox Tintoré SeaDataCloud Mourre
+ -->
+<!--  LocalWords:  Hernández Lasheras renewcommand mathbf varphi cdot
+ -->
+<!--  LocalWords:  nabla dx frac mathrm bc ds sim geostrophically geo
+ -->
+<!--  LocalWords:  eqnarray MSE dataset ODV discretized Laplacian dD
+ -->
+<!--  LocalWords:  rightarrow Advection jl Curvilinear Jupyter GALF
+ -->
+<!--  LocalWords:  EOF EOFs Gyre Formentera DIVAnd surfpress Puig des
+ -->
+<!--  LocalWords:  Galfi biogeochemical climatologies pdf mol ReLU
+ -->
+<!--  LocalWords:  parameterized representativity GPS meridional
+ -->
+
+
+<!--
+
+# Digital information
+*  Letters → numbers (e.g. A is 65 in the ASCII table, 🎂 is unicode number 127874)
+*  Text (words, paragraph, books) → Vector of numbers
+*  Color → 3 numbers (red, green blue fractions)
+*  Image → Matrix of colors or 3D-array
+*  Sound → Vector (air pressure varying in time)
+*  Temperature field in the ocean → 4D-array
+
+---
+# Digital information
+*  Different representations are not unique
+*  Assume there are 3 categories: cat, dog, bird. One can give them the numbers 1,2 and 3 or the vectors [1,0,0], [0,1,0] and [0,0,1]
+*  The later representation is called one-hot-encoding and is generally preferred for categorial variables
+
+-->
+
+
+
+<!--
+---
+# Try it yourself?
+
+* We can try a very simple neural network classifier
+* Type https://tinyurl.com/simple-neural-network/ and download the file
+* If you have a google account, go to https://colab.research.google.com/
+* Open the downloaded file: File->Open notebook->Upload->Browse to select the file
+* Select: Runtime->Run all
+* Try to change the neural network model to improve the accuracy
+-->
